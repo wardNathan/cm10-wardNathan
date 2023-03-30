@@ -1,40 +1,42 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-const generateMarkdown = require('./src/generateMarkdown');
-const Manager = require('./employees/manager');
-const Engineer = require('./employees/engineer');
-const Intern = require('./employees/intern');
+const generateHTML = require('./src/generateMarkdown.js');
+const Manager = require('./employees/manager.js');
+const Engineer = require('./employees/engineer.js');
+const Intern = require('./employees/intern.js');
 
-const employees = [];
+const team = [];
 
 function addManager() {
-    inquirer.createPromptModule([
-        {
-            type: 'input',
-            name: 'name',
-            message: "Enter the manager's name",
-        },
-        {
-            type: 'input',
-            name: 'id',
-            message: "Enter the manager's ID",
-        },
-        {
-            type: 'input',
-            name: 'email',
-            message: "Enter the manager's email",
-        },
-        {
-            type: 'input',
-            name: 'officeNumber',
-            message: "Enter the manager's office number"
-        },
+    inquirer .prompt([
+    {
+        type: 'input',
+        name: 'name',
+        message: "Enter the manager's name.",
+    },
+    {
+        type: 'input',
+        name: 'id',
+        message: "Enter the manager's id?",
+    },
+    {
+        type: 'input',
+        name: 'email',
+        message: "Enter the manager's email.",
+    },
+    {
+        type: 'input',
+        name: 'officeNumber',
+        message: "Enter the manager's office number.",
+    }
     ])
-        .then((data) => {
-            const manager = new Manager(data.name, data.id, data.email, data.officeNumber);
-            team.push(manager);
-            newEmployee();
-        })
+    .then ((data) => {
+
+        const manager = new Manager(data.name, data.id, data.email, data.officeNumber);
+        team.push(manager);
+        addEmployee();
+
+    })
 }
 
 function addEmployee() {
@@ -42,76 +44,83 @@ function addEmployee() {
         {
             type: 'list',
             name: 'question',
-            message: 'Add new employee?',
-            choices: ['No other employees', 'Add engineer','Add intern']
+            message: 'Add another employee?',
+            choices: ['Engineer', 'Intern', "Finished"]
         },
     ])
     .then ((data) => {
-        if (data.question === 'Add engineer') {
+        if (data.question === 'Engineer') {
             addEngineer();
-        } else if (data.question === 'Add intern') {
-            addIntern()
+        } else if (data.question === 'Intern') {
+            addIntern();
+        } else {
+            fs.writeFile('./dist/index.html', generateHTML(team), (err) =>
+            err ? console.log(err) : console.log('Your employees have been generated in the index.html in the dist folder.'))
         }
-
     })
 }
 
 function addEngineer() {
-    inquirer.createPromptModule([
+    inquirer .prompt ([
         {
             type: 'input',
             name: 'name',
-            message: "Enter the engineers name",
+            message: "Enter the engineer's name.",
         },
         {
             type: 'input',
             name: 'id',
-            message: "Enter the engineers ID",
+            message: "Enter the engineer's id.",
         },
         {
             type: 'input',
             name: 'email',
-            message: "Enter the engineers email",
+            message: "Enter the engineer's email.",
         },
         {
             type: 'input',
-            name: 'github',
-            message: "Enter the engineers GitHub"
-        },
+            name: 'gitHub',
+            message: "Enter the engineer's GitHub",
+        }
     ])
-        .then((data) => {
-            const engineer = new Engineer(data.name, data.id, data.email, data.officeNumber);
-            team.push(engineer);
-            newEmployee();
-        })
+    .then ((data) => {
+        const engineer = new Engineer(data.name, data.id, data.email, data.gitHub);
+        team.push(engineer);
+        addEmployee();
+    })
 }
 
 function addIntern() {
-    inquirer.createPromptModule([
+    inquirer .prompt([
         {
             type: 'input',
             name: 'name',
-            message: "Enter the intern's name",
+            message: "Enter the intern's name.",
         },
         {
             type: 'input',
             name: 'id',
-            message: "Enter the intern's ID",
+            message: "Enter the intern's id.",
         },
         {
             type: 'input',
             name: 'email',
-            message: "Enter the intern's email",
+            message: "Enter the intern's email.",
         },
         {
             type: 'input',
             name: 'school',
-            message: "Enter the intern's school"
-        },
+            message: "Enter the intern's school.",
+        }
     ])
-        .then((data) => {
-            const intern = new Intern(data.name, data.id, data.email, data.officeNumber);
-            team.push(intern);
-            newEmployee();
-        })
+    .then ((data) => {
+        const intern = new Intern(data.name, data.id, data.email, data.school);
+        team.push(intern);
+        addEmployee();
+    })
 }
+function init() {
+    addManager()
+}
+
+init();
